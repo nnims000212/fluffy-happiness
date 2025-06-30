@@ -42,6 +42,8 @@ All data is persisted to localStorage through the `useLocalStorage` hook (`src/h
 - Active todo state (`activeTodoId`, `selectedTodoId`) is shared between Timer and Todo pages
 - Sessions store actual time data while todos track task completion status with optional `completedAt` timestamp
 - Project management includes creation, deletion, renaming, archiving/unarchiving, and notes with automatic data migration
+- **Top 3 Focus**: Todos can have an optional `focusOrder` (1, 2, or 3) for daily prioritization
+- **Collapsible UI**: Completed sections maintain individual collapse state for projects and Inbox
 
 ### Component Structure
 - **Pages**: 

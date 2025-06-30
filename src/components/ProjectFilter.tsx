@@ -36,16 +36,16 @@ const ProjectFilter: React.FC<ProjectFilterProps> = ({
                     <span className="project-count">{getProjectTodoCount(null)}</span>
                 </div>
                 
-                {projects.map(project => {
-                    const count = getProjectTodoCount(project);
+                {projects.filter(p => !p.archived).map(project => {
+                    const count = getProjectTodoCount(project.name);
                     
                     return (
                         <div 
-                            key={project}
-                            className={`project-item ${selectedProject === project ? 'active' : ''}`}
-                            onClick={() => onProjectSelect(project)}
+                            key={project.id}
+                            className={`project-item ${selectedProject === project.name ? 'active' : ''}`}
+                            onClick={() => onProjectSelect(project.name)}
                         >
-                            <span className="project-name">{project}</span>
+                            <span className="project-name">{project.name}</span>
                             <span className="project-count">{count}</span>
                         </div>
                     );

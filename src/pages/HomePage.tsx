@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
     
     // Logic for calculating colors is still needed and remains here.
     const allProjectsForColors = useMemo(() => {
-        const allKnownProjects = new Set(projects);
+        const allKnownProjects = new Set(projects.map(p => p.name));
         sessions.forEach(session => { if (session && session.project) allKnownProjects.add(session.project) });
         projectBreakdown.forEach(item => allKnownProjects.add(item.name));
         return Array.from(allKnownProjects);

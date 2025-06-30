@@ -134,9 +134,8 @@ const TimerPage: React.FC = () => {
             return;
         }
         if (!isRunning) { 
-            if (mode === 'stopwatch' && elapsedTime === 0) {
-                setSessionStartTime(new Date());
-            } else if (mode === 'stopwatch' && elapsedTime > 0) {
+            if (mode === 'stopwatch') {
+                // When resuming stopwatch, adjust sessionStartTime to preserve elapsed time
                 setSessionStartTime(new Date(Date.now() - elapsedTime));
             }
             toast(`Session resumed for: ${currentTaskName || 'Unspecified Focus Session'}`, { icon: '▶️' });
@@ -146,7 +145,7 @@ const TimerPage: React.FC = () => {
 
     const handleStop = () => {
         if (!sessionStartTime) return;
-        let elapsedMs = mode === 'timer' ? targetDuration - timeRemaining : elapsedTime;
+        const elapsedMs = mode === 'timer' ? targetDuration - timeRemaining : elapsedTime;
         if (elapsedMs > 1000) {
             let todoIdToSave = activeTodoId;
             const taskName = getSessionDescription();
@@ -268,7 +267,7 @@ const TimerPage: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="timeline-scroll-wrapper" ref={timelineScrollRef}>
-                                    <Timeline sessions={todaySessions} allProjects={projects} pixelsPerMinute={2} />
+                                    <Timeline sessions={todaySessions} allProjects={projects.map(p => p.name)} pixelsPerMinute={2} />
                                 </div>
                             )}
                         </div>

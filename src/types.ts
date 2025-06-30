@@ -26,4 +26,5 @@ export interface Todo {
   completedAt?: Date; // When the task was completed
   deleted: boolean; // Soft delete flag
   deletedAt?: Date; // When the task was deleted
+  focusOrder?: number; // 1, 2, or 3 for Top 3 Focus, undefined for regular tasks
 }

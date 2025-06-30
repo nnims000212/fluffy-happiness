@@ -85,7 +85,7 @@ const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, on
     return (
         <div className="modal-overlay" onKeyDown={handleKeyDown}>
             <div className="modal-content">
-                <h2>{isEditing ? 'Edit Session' : 'Add Manual Entry'}</h2>
+                <h2>{isEditing ? 'Edit Session' : 'Add Entry'}</h2>
                 <div className="modal-form">
                      <div className="form-group">
                         <label htmlFor="edit-description">Task Name</label>

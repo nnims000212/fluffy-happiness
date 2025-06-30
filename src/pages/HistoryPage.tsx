@@ -79,7 +79,7 @@ const HistoryPage: React.FC = () => {
                 <div className="home-page-header">
                     <h2>Session History</h2>
                     <button className="btn-primary" onClick={handleAddClick}>
-                        Add Manual Entry
+                        Add Entry
                     </button>
                 </div>
 

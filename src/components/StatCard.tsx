@@ -18,7 +18,7 @@ const StatCard: React.FC<StatCardProps> = ({
     subtitle, 
     progress,
     progressColor = '#8A2BE2',
-    animated = true,
+    // animated = true,
     trend,
     trendValue
 }) => {

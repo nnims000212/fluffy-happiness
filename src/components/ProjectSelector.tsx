@@ -75,7 +75,7 @@ const ProjectSelector: React.FC<ProjectSelectorProps> = ({ selectedProject, onPr
         <div className="custom-select-wrapper">
             <select value={selectedProject} onChange={handleSelectChange}>
                 <option value="">Select Project</option>
-                {projects.map(p => <option key={p} value={p}>{p}</option>)}
+                {projects.filter(p => !p.archived).map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                 <option value="new_project">-- Create New Project --</option>
             </select>
         </div>

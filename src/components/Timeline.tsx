@@ -44,7 +44,7 @@ const Timeline: React.FC<TimelineProps> = ({ sessions, allProjects, pixelsPerMin
                             }}
                             title={`${session.description || 'Session'} (${formatToHoursAndMinutes(session.durationMs)})`}
                         >
-                            <span className="timeline-session-block-title">{session.project || session.description}</span>
+                            <span className="timeline-session-block-title">{session.description || session.project || 'Session'}</span>
                              <span className="timeline-session-block-time">{startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
                         </div>
                     )

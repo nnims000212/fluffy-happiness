@@ -1,39 +1,13 @@
-# Focus Timer - stunning-potato
-
-A comprehensive focus timer application built with React, TypeScript, and Vite featuring advanced project management, task tracking, and productivity analytics.
-
-## Features
-
-- **Advanced Timer**: Countdown and stopwatch modes with audio feedback
-- **Project Management**: Create, archive, and organize projects with notes
-- **Task Integration**: Link timer sessions to specific todos and projects
-- **Analytics Dashboard**: Detailed statistics and charts for productivity tracking
-- **Collapsible Sidebar**: Organized navigation with collapsible project sections
-- **Data Persistence**: All data stored locally with automatic migration support
-
-## Tech Stack
-
-- **Frontend**: React 19.1.0 with TypeScript
-- **Build Tool**: Vite 6.3.5 with React plugin
-- **Styling**: Custom CSS with Google Fonts (Poppins, Roboto Mono)
-- **State Management**: React Context API
-- **Data Persistence**: localStorage with custom hooks
-- **Notifications**: react-hot-toast
-- **Date Utilities**: date-fns
-- **Linting**: ESLint with TypeScript integration
-
-## Development
+# React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-### Available Scripts
+Currently, two official plugins are available:
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production (runs TypeScript compiler then Vite build)
-- `npm run lint` - Run ESLint for code quality checks
-- `npm run preview` - Preview production build locally
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Expanding the ESLint configuration
+## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 

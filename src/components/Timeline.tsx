@@ -35,7 +35,7 @@ const Timeline: React.FC<TimelineProps> = ({ sessions, allProjects, pixelsPerMin
                     
                     return (
                         <div 
-                            key={new Date(session.startTime).toISOString()}
+                            key={session.id}
                             className="timeline-session-block"
                             style={{ 
                                 top: `${startMinutes * pixelsPerMinute}px`, 

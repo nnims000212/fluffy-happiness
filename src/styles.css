@@ -227,6 +227,7 @@ p {
     height: 100%;
     box-sizing: border-box;
     animation: pageEnter var(--transition-slow) ease-out;
+    padding: var(--space-xl);
 }
 
 /* --- Timer Page Specific Layout --- */
@@ -836,31 +837,42 @@ p {
 .home-page-layout {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100vh;
     max-width: 1400px;
     margin: 0 auto;
     box-sizing: border-box;
+    padding: var(--space-xl) 0;
+    overflow: hidden;
 }
 
 .home-page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg);
     flex-wrap: wrap;
-    gap: 15px;
-    padding: 0 20px;
+    gap: var(--space-md);
+    padding: 0 var(--space-xl);
+}
+
+.home-page-header h2 {
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 .date-display .current-date {
-    font-size: 1.5em;
+    font-size: 1.8em;
     font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
 }
 
 .home-page-controls-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-md);
 }
 
 .view-switcher {
@@ -893,9 +905,9 @@ p {
 .home-page-content {
     display: flex;
     flex-grow: 1;
-    gap: 20px;
+    gap: var(--space-lg);
     min-height: 0; /* Critical for children scrolling */
-    padding: 0 20px 20px 20px;
+    padding: 0 var(--space-xl) var(--space-lg) var(--space-xl);
 }
 
 .left-column-activity {
@@ -908,7 +920,7 @@ p {
 }
 
 .activity-header {
-    padding: 15px 20px;
+    padding: var(--space-md) var(--space-lg);
     border-bottom: 1px solid var(--border-color);
     flex-shrink: 0;
 }
@@ -931,15 +943,22 @@ p {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    height: 100%;
 }
 
 /* --- Summary Card Styles --- */
 .content-card {
-    padding: 24px;
+    padding: var(--space-lg);
     background-color: var(--primary-surface-color);
     border-radius: 16px;
     border: 1px solid var(--border-color);
+}
+
+.daily-summary-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .card-header {
@@ -1350,14 +1369,21 @@ p {
 }
 
 .top-categories-section {
-    margin-top: 20px;
+    margin-top: var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 .top-categories-title {
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: var(--space-md);
+    flex-shrink: 0;
 }
 .top-categories-list {
-    min-height: 130px;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 }
 .category-item {
     display: flex;
@@ -1382,6 +1408,7 @@ p {
     height: 100%;
     background-color: var(--primary-accent-color);
     border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .category-percent {
     font-weight: 600;
@@ -1531,24 +1558,6 @@ p {
 /* --- Page-Specific & Component Styles --- */
 
 /* --- Consistent Page Header --- */
-.home-page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.home-page-header h2 {
-  margin: 0;
-  font-size: 1.8em;
-  font-weight: 600;
-}
-
-.home-page-controls-group {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
 
 /* --- Timer Page --- */
 .timer-mode-switcher {
@@ -1779,7 +1788,8 @@ p {
 
 /* Content Header */
 .content-header {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg);
+    padding: 0;
 }
 
 .header-left {
@@ -1791,7 +1801,9 @@ p {
 .content-header h2 {
     margin: 0;
     color: var(--text-color);
-    font-size: 1.5rem;
+    font-size: 1.8em;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 /* Sidebar Toggle */
@@ -1934,25 +1946,6 @@ p {
     fill: var(--text-muted-color);
     transition: all var(--transition-normal);
 }
-
-/* Enhanced Progress Bars */
-.category-progress-bar-container {
-    background-color: var(--secondary-surface-color);
-    height: 6px;
-    border-radius: 3px;
-    overflow: hidden;
-    flex: 1;
-    margin: 0 var(--space-sm);
-}
-
-.category-progress-bar {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    background: linear-gradient(90deg, var(--primary-accent-color), #9d4edd);
-    position: relative;
-}
-
 
 /* Completed Tasks Grouping */
 .completed-groups {
@@ -2363,7 +2356,10 @@ p {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding: 24px; /* Ensure padding is consistent with other content-cards */
+    padding: var(--space-lg);
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
 }
 
 .task-details-placeholder {
@@ -2371,13 +2367,12 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-surface-color);
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
     color: var(--text-muted-color);
     font-style: italic;
-    padding: 20px;
+    padding: var(--space-lg);
     text-align: center;
+    opacity: 0.6;
+    font-size: 0.9em;
 }
 
 .task-details-header {

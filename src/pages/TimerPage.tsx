@@ -182,7 +182,7 @@ const TimerPage: React.FC = () => {
     });
 
     return (
-        <div className="page" style={{ padding: '2rem' }}>
+        <div className="page">
             <div className="home-page-header">
                 <h2>Focus Zone</h2>
                 <div className="view-switcher">

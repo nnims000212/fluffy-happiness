@@ -22,7 +22,6 @@ const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInVie
         <div className="content-card daily-summary-card">
             <div className="card-header">
                 <p className="content-card-title">{title}</p>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="settings-icon"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.78 1.28a2 2 0 0 0 .73 2.73l.09.09a2 2 0 0 1 0 2.83l-.08.08a2 2 0 0 0-.73 2.73l.78 1.28a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.78-1.28a2 2 0 0 0-.73-2.73l-.09-.09a2 2 0 0 1 0-2.83l.08-.08a2 2 0 0 0 .73-2.73l-.78-1.28a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </div>
             <div className="summary-stats-grid">
                 <StatCard 
@@ -39,12 +38,12 @@ const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInVie
                 />
             </div>
             <div className="summary-breakdown">
-                <p className="breakdown-title">Breakdown</p>
+                <p className="breakdown-title">Project Breakdown</p>
                 <div className="breakdown-content">
                     <DonutChart data={projectBreakdown} allProjects={allProjectsForColors} />
                     <div className="breakdown-legend">
-                        {projectBreakdown.slice(0, 4).map(item => (
-                            <div key={item.name} className="legend-item">
+                        {projectBreakdown.slice(0, 4).map((item, index) => (
+                            <div key={`${item.name}-${item.value}-${index}`} className="legend-item">
                                 <span className="legend-color-dot" style={{ backgroundColor: getProjectColor(item.name, allProjectsForColors) }}></span>
                                 <div className="legend-text">
                                     <span className="legend-name">{item.name}</span>
@@ -56,19 +55,25 @@ const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInVie
                 </div>
             </div>
             <div className="top-categories-section">
-                <p className="top-categories-title">Top Categories</p>
+                <p className="top-categories-title">Task Breakdown</p>
                 <div className="top-categories-list">
-                    {topCategories.length > 0 ? topCategories.slice(0, 3).map(cat => (
-                            <div key={cat.name} className="category-item">
-                                <span className="category-percent">{`${cat.displayPercent}%`}</span>
-                                <div className="category-progress-bar-container">
-                                    <div className="category-progress-bar" style={{ width: `${cat.displayPercent}%`, backgroundColor: 'var(--primary-accent-color)' }}></div>
+                    {topCategories.length > 0 ? (
+                        topCategories.slice(0, 4).map((cat, index) => {
+                            const truncatedName = cat.name.length > 25 ? `${cat.name.substring(0, 25)}...` : cat.name;
+                            return (
+                                <div key={`${cat.name}-${cat.value}-${index}`} className="category-item">
+                                    <span className="category-percent">{`${cat.displayPercent}%`}</span>
+                                    <div className="category-progress-bar-container">
+                                        <div className="category-progress-bar" style={{ width: `${cat.displayPercent}%`, backgroundColor: 'var(--primary-accent-color)' }}></div>
+                                    </div>
+                                    <span className="category-name" title={cat.name}>{truncatedName}</span>
+                                    <span className="category-duration">{formatToHoursAndMinutes(cat.value)}</span>
                                 </div>
-                                <span className="category-name">{cat.name}</span>
-                                <span className="category-duration">{formatToHoursAndMinutes(cat.value)}</span>
-                            </div>
-                        )
-                    ) : <p className="placeholder-text">No category data for this period.</p>}
+                            );
+                        })
+                    ) : (
+                        <p className="placeholder-text">No category data for this period.</p>
+                    )}
                 </div>
             </div>
         </div>

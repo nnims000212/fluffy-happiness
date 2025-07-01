@@ -74,14 +74,15 @@ const HistoryPage: React.FC = () => {
     };
 
     return (
-        <div className="page" style={{ padding: '2rem' }}>
-            <div className="entries-section">
-                <div className="home-page-header">
-                    <h2>Session History</h2>
-                    <button className="btn-primary" onClick={handleAddClick}>
-                        Add Entry
-                    </button>
-                </div>
+        <div className="page">
+            <div className="home-page-header">
+                <h2>Session History</h2>
+                <button className="btn-primary" onClick={handleAddClick}>
+                    Add Entry
+                </button>
+            </div>
+            
+            <div className="content-card">
 
                 {sortedSessions.length > 0 ? (
                     <table id="entries-table">

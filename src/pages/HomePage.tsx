@@ -21,8 +21,19 @@ const HomePage: React.FC = () => {
     const timelineScrollRef = useRef<HTMLDivElement>(null);
     const datePickerToggleRef = useRef<HTMLButtonElement>(null);
     
-    // Use the hook to automatically scroll the timeline
-    useTimelineScroll(timelineScrollRef, 2);
+    // Check if we're viewing today
+    const isViewingToday = useMemo(() => {
+        const today = new Date();
+        return selectedDate.getDate() === today.getDate() && 
+               selectedDate.getMonth() === today.getMonth() && 
+               selectedDate.getFullYear() === today.getFullYear();
+    }, [selectedDate]);
+    
+    // Use the hook to automatically scroll the timeline only when viewing today in day view
+    useTimelineScroll(
+        currentView === 'day' && isViewingToday ? timelineScrollRef : { current: null }, 
+        2
+    );
 
     // The custom data-processing hook works just as before.
     const {

@@ -11,11 +11,11 @@ import toast from 'react-hot-toast';
 const EditableSessionItem: React.FC<{ session: Session }> = ({ session }) => {
     const { updateSession } = useAppContext();
     const [isEditing, setIsEditing] = useState(false);
-    const [description, setDescription] = useState(session.description);
+    const [notes, setNotes] = useState(session.notes || '');
 
     const handleSave = () => {
-        if (description !== session.description) {
-            updateSession(session.id, { description });
+        if (notes !== (session.notes || '')) {
+            updateSession(session.id, { notes });
         }
         setIsEditing(false);
     };
@@ -29,8 +29,8 @@ const EditableSessionItem: React.FC<{ session: Session }> = ({ session }) => {
             {isEditing ? (
                 <input
                     type="text"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
                     onBlur={handleSave}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
                     autoFocus
@@ -38,7 +38,7 @@ const EditableSessionItem: React.FC<{ session: Session }> = ({ session }) => {
                 />
             ) : (
                 <p className="session-item-notes" onClick={() => setIsEditing(true)}>
-                    {description || <span className="placeholder-text-inline">Click to add notes...</span>}
+                    {notes || <span className="placeholder-text-inline">Click to add notes...</span>}
                 </p>
             )}
         </li>

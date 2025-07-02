@@ -13,7 +13,7 @@ interface EditSessionModalProps {
 
 const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, onSave, onClose }) => {
     const isEditing = !!session;
-    const [form, setForm] = useState({ description: '', project: '', date: '', time: '', duration: '' });
+    const [form, setForm] = useState({ description: '', project: '', date: '', time: '', duration: '', notes: '' });
 
     useEffect(() => {
         if (isOpen) {
@@ -24,7 +24,8 @@ const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, on
                     project: session.project || '',
                     date: formatDateToInput(startTime),
                     time: formatTimeToInput(startTime),
-                    duration: String(Math.round(session.durationMs / 60000))
+                    duration: String(Math.round(session.durationMs / 60000)),
+                    notes: session.notes || ''
                 });
             } else {
                 // Reset for "Add" mode with current time as default
@@ -34,7 +35,8 @@ const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, on
                     project: '',
                     date: formatDateToInput(now),
                     time: formatTimeToInput(now),
-                    duration: '30'
+                    duration: '30',
+                    notes: ''
                 });
             }
         }
@@ -67,7 +69,8 @@ const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, on
             description: form.description.trim() || "Unspecified Focus Session",
             project: form.project,
             startTime: newStartTime,
-            durationMs: newDurationMinutes * 60000
+            durationMs: newDurationMinutes * 60000,
+            notes: form.notes.trim()
         };
 
         // Call onSave with both the new data and the original session object.
@@ -108,6 +111,10 @@ const EditSessionModal: React.FC<EditSessionModalProps> = ({ isOpen, session, on
                     <div className="form-group">
                         <label htmlFor="edit-duration">Duration (minutes)</label>
                         <input type="number" id="edit-duration" name="duration" min="1" value={form.duration} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="edit-notes">Session Notes (Optional)</label>
+                        <input type="text" id="edit-notes" name="notes" value={form.notes} onChange={handleChange} placeholder="Add notes about this session..." />
                     </div>
                 </div>
                 <div className="modal-actions">

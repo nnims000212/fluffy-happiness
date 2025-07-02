@@ -52,11 +52,11 @@ const TimerPage: React.FC = () => {
         const description = getSessionDescription();
         // Use actual elapsed time for stopwatch, target duration for timer
         const actualDuration = mode === 'timer' ? targetDuration : elapsedTime;
-        addSession({ description, project: currentProject, startTime: sessionStartTime, durationMs: actualDuration, todoId: activeTodoId ?? undefined });
+        addSession({ description, project: currentProject, startTime: sessionStartTime, durationMs: actualDuration, todoId: activeTodoId ?? undefined, notes: currentNotes });
         const toastMessage = currentTaskName ? `Session for "${currentTaskName}" complete!` : "Session complete!";
         toast.success(toastMessage);
         resetTimerState();
-    }, [addSession, getSessionDescription, currentProject, sessionStartTime, targetDuration, elapsedTime, mode, resetTimerState, activeTodoId, currentTaskName]);
+    }, [addSession, getSessionDescription, currentProject, sessionStartTime, targetDuration, elapsedTime, mode, resetTimerState, activeTodoId, currentTaskName, currentNotes]);
 
     useEffect(() => {
         if (isRunning) {
@@ -160,7 +160,7 @@ const TimerPage: React.FC = () => {
                 }
             }
             
-            addSession({ description: taskName, project: currentProject, startTime: sessionStartTime, durationMs: elapsedMs, todoId: todoIdToSave ?? undefined });
+            addSession({ description: taskName, project: currentProject, startTime: sessionStartTime, durationMs: elapsedMs, todoId: todoIdToSave ?? undefined, notes: currentNotes });
             const toastMessage = currentTaskName ? `Session for "${currentTaskName}" saved!` : "Session saved!";
             toast.success(toastMessage);
         }

@@ -1382,8 +1382,8 @@ p {
 }
 .top-categories-list {
     flex: 1;
-    overflow-y: auto;
     min-height: 0;
+    overflow-y: auto;
 }
 .category-item {
     display: flex;

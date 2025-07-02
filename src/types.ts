@@ -3,9 +3,10 @@ export interface Session {
     id: string; // Now required for reliable updates
     startTime: Date;
     durationMs: number;
-    description: string;
+    description: string; // Task name
     project: string;
     todoId?: string | null; // Optional: Link to a To-do item
+    notes?: string; // Session notes
 }
 
 export interface Project {

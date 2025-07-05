@@ -691,6 +691,284 @@ p {
     gap: 1rem;
 }
 
+/* Daily Reset Modal Specific Styles */
+.daily-reset-modal {
+    max-width: 550px;
+}
+
+.reset-summary {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.reset-summary p {
+    margin: 0 0 0.75rem 0;
+    color: #f0f0f0;
+}
+
+.task-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.task-summary.completed {
+    color: #4ade80;
+}
+
+.task-summary.incomplete {
+    color: #fbbf24;
+}
+
+.task-summary:last-child {
+    margin-bottom: 0;
+}
+
+.reset-options h3 {
+    margin: 0 0 1rem 0;
+    color: #f0f0f0;
+    font-size: 1.1rem;
+}
+
+.reset-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #4a4a5a;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.02);
+    transition: all var(--transition-fast);
+}
+
+.reset-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #6a6a7a;
+}
+
+.reset-option:last-child {
+    margin-bottom: 0;
+}
+
+.reset-option input[type="radio"] {
+    margin: 0;
+    margin-top: 2px;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.option-content {
+    flex: 1;
+}
+
+.option-content strong {
+    display: block;
+    color: #f0f0f0;
+    margin-bottom: 0.25rem;
+}
+
+.option-content p {
+    margin: 0;
+    color: #a0a0b0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.modal-actions .left-actions {
+    margin-right: auto;
+}
+
+.modal-actions .right-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: #a0a0b0;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    text-decoration: underline;
+    transition: color var(--transition-fast);
+}
+
+.btn-text:hover {
+    color: #f0f0f0;
+}
+
+/* Settings Page Styles */
+.settings-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #f0f0f0;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+}
+
+.settings-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f0f0f0;
+}
+
+.settings-header p {
+    margin: 0;
+    color: #a0a0b0;
+    font-size: 1.1rem;
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.settings-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #4a4a5a;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.section-header p {
+    margin: 0;
+    color: #a0a0b0;
+    font-size: 0.9rem;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.setting-item:first-child {
+    padding-top: 0;
+}
+
+.setting-item label {
+    color: #f0f0f0;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.input-with-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.input-with-action input {
+    width: 120px;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #4a4a5a;
+    background-color: #1e1e28;
+    color: #f0f0f0;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.input-with-action input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: #888;
+    text-align: right;
+}
+
+.checkbox-setting {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.checkbox-setting input[type="checkbox"] {
+    width: auto !important;
+    margin: 0;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.checkbox-label strong {
+    color: #f0f0f0;
+    font-weight: 500;
+}
+
+.checkbox-description {
+    color: #a0a0b0;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+.setting-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.setting-info strong {
+    color: #f0f0f0;
+    font-weight: 500;
+}
+
+.setting-info span {
+    color: #a0a0b0;
+    font-size: 0.85rem;
+}
+
+.settings-section .btn-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.settings-section .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* --- Enhanced Button Base Styles --- */
 .btn-primary,
 .btn-secondary {
@@ -959,6 +1237,7 @@ p {
     display: flex;
     flex-direction: column;
     min-height: 0;
+    padding-bottom: 8px;
 }
 
 .card-header {
@@ -985,7 +1264,7 @@ p {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .stat-card:not(.enhanced) {
@@ -1309,7 +1588,7 @@ p {
 }
 
 .summary-breakdown {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .breakdown-title {
@@ -1369,7 +1648,7 @@ p {
 }
 
 .top-categories-section {
-    margin-top: var(--space-lg);
+    margin-top: var(--space-md);
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1591,10 +1870,12 @@ p {
     width: 250px;
     background-color: var(--nav-bg-color);
     border-right: 1px solid var(--border-color);
+    border-radius: 8px;
     padding: 20px 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .todo-content {
@@ -1609,6 +1890,7 @@ p {
 .todo-details {
     width: 350px;
     border-left: 1px solid var(--border-color);
+    border-radius: 8px;
     padding: 20px;
     background-color: var(--primary-surface-color);
     overflow-y: auto;
@@ -2389,6 +2671,36 @@ p {
     color: var(--text-color);
 }
 
+.task-name-container {
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.task-name-input {
+    width: 100%;
+    padding: 0.5rem 0;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1.3;
+    box-sizing: border-box;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom-color var(--transition-normal);
+    font-family: inherit;
+}
+
+.task-name-input:focus {
+    outline: none;
+    border-bottom-color: var(--primary-accent-color);
+}
+
+.task-name-input::placeholder {
+    color: var(--text-muted-color);
+    opacity: 0.7;
+}
+
 .task-details-card .form-group {
     margin-bottom: 0; /* Reset margin as gap handles spacing */
 }
@@ -2862,6 +3174,82 @@ p {
 
 .pending-task-item .todo-actions {
     margin-left: var(--space-xs);
+}
+
+/* Drag-over state for pending tasks list */
+.pending-tasks-list.drag-over {
+    background: linear-gradient(135deg, var(--primary-surface-color) 0%, rgba(0, 216, 255, 0.1) 100%);
+    border: 2px solid var(--focus-color);
+    box-shadow: 0 0 20px rgba(0, 216, 255, 0.3);
+}
+
+/* Today Page Layout */
+.today-page-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    gap: 20px;
+}
+
+.today-page-header {
+    margin-bottom: 20px;
+}
+
+.today-page-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.today-page-content {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+}
+
+.today-left-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.today-focus-card {
+    flex: 1;
+    min-height: 0;
+    padding: 20px;
+}
+
+.today-right-section {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    min-height: 0;
+}
+
+.today-right-section .task-input-container {
+    width: 100%;
+    max-width: 350px;
+    flex-shrink: 0;
+}
+
+.today-right-section .task-details-card,
+.today-right-section .task-details-placeholder {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: var(--primary-surface-color) !important;
+    border-radius: 8px !important;
+}
+
+.today-right-section .pending-tasks-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 /* Collapsible Completed Section Styles */

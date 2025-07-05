@@ -1,6 +1,96 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# Development Partnership
+
+We're building production-quality code together. Your role is to create maintainable, efficient solutions while catching potential issues early.
+
+## 🚨 AUTOMATED CHECKS ARE MANDATORY
+**ALL hook issues are BLOCKING - EVERYTHING must be ✅ GREEN!**  
+No errors. No formatting issues. No linting problems. Zero tolerance.  
+These are not suggestions. Fix ALL issues before continuing.
+
+## CRITICAL WORKFLOW - ALWAYS FOLLOW THIS!
+
+### Research → Plan → Implement
+**NEVER JUMP STRAIGHT TO CODING!** Always follow this sequence:
+1. **Research**: Explore the codebase, understand existing patterns
+2. **Plan**: Create a detailed implementation plan and verify it with me  
+3. **Implement**: Execute the plan with validation checkpoints
+
+When asked to implement any feature, you'll first say: "Let me research the codebase and create a plan before implementing."
+
+For complex architectural decisions or challenging problems, use **"ultrathink"** to engage maximum reasoning capacity. Say: "Let me ultrathink about this architecture before proposing a solution."
+
+### USE MULTIPLE AGENTS!
+*Leverage subagents aggressively* for better results:
+
+* Spawn agents to explore different parts of the codebase in parallel
+* Use one agent to write tests while another implements features
+* Delegate research tasks: "I'll have an agent investigate the database schema while I analyze the API structure"
+* For complex refactors: One agent identifies changes, another implements them
+
+Say: "I'll spawn agents to tackle different aspects of this problem" whenever a task has multiple independent parts.
+
+### Reality Checkpoints
+**Stop and validate** at these moments:
+- After implementing a complete feature
+- Before starting a new major component  
+- When something feels wrong
+- Before declaring "done"
+
+## Working Memory Management
+
+### When context gets long:
+- Re-read this CLAUDE.md file
+- Summarize progress in a PROGRESS.md file
+- Document current state before major changes
+
+### Maintain TODO.md:
+```
+## Current Task
+- [ ] What we're doing RIGHT NOW
+
+## Completed  
+- [x] What's actually done and tested
+
+## Next Steps
+- [ ] What comes next
+```
+
+
+## Performance & Security
+
+### **Measure First**:
+- No premature optimization
+- Benchmark before claiming something is faster
+- Use pprof for real bottlenecks
+
+### **Security Always**:
+- Validate all inputs
+- Use crypto/rand for randomness
+- Prepared statements for SQL (never concatenate!)
+
+## Communication Protocol
+
+### Progress Updates:
+```
+✓ Implemented authentication (all tests passing)
+✓ Added rate limiting  
+✗ Found issue with token expiration - investigating
+```
+
+### Suggesting Improvements:
+"The current approach works, but I notice [observation].
+Would you like me to [specific improvement]?"
+
+## Working Together
+
+- This is always a feature branch - no backwards compatibility needed
+- When in doubt, we choose clarity over cleverness
+
+- **REMINDER**: If this file hasn't been referenced in 30+ minutes, RE-READ IT!
+
+Avoid complex abstractions or "clever" code. The simple, obvious solution is probably better, and my guidance helps you stay focused on what matters.
 
 ## Development Commands
 
@@ -11,7 +101,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Application Overview
 
-This is a comprehensive focus timer application built with React, TypeScript, and Vite. It provides time tracking, task management, project organization, and detailed analytics through a single-page application with four main sections.
+This is a comprehensive focus timer application built with React, TypeScript, and Vite. It provides time tracking, task management, project organization, and detailed analytics through a single-page application with five main sections: Home (dashboard), Top 3 (daily planning), Timer (focus sessions), To-do (task management), and History (session management).
 
 ## Architecture Overview
 
@@ -20,7 +110,8 @@ The app uses React Context API with a centralized `AppContext` that manages all 
 - **Sessions**: Focus/timer sessions with timing, task names, projects, and session notes
 - **Todos**: Task management with project categorization, notes, and focus prioritization
 - **Projects**: User-defined project categories with notes and archiving capabilities
-- **Navigation**: Single-page app with 4 main pages (Home, Timer, Todo, History)
+- **Navigation**: Single-page app with 5 main pages (Home, Top 3, Timer, To-do, History)
+- **Daily Work Goals**: User-configurable daily work hour targets with settings UI
 - **Active States**: Currently tracked todo and selected todo for seamless workflow
 
 ### Data Persistence
@@ -30,6 +121,7 @@ All data is persisted to localStorage through the `useLocalStorage` hook, which:
 - Uses a custom date reviver to properly restore Date objects from JSON
 - Implements automatic cleanup of soft-deleted todos after 30 days
 - Supports data migration for legacy project formats
+- Stores user preferences including daily work goal settings
 
 ## Data Types & Relationships
 
@@ -94,8 +186,9 @@ interface Project {
 - Hover tooltips showing session details
 
 **Summary Components:**
-- Work hours vs. target hours with progress tracking
-- Project breakdown with donut chart and legend
+- Work hours vs. configurable target hours with progress tracking
+- Adjustable daily work goal via settings modal (click settings icon on "Percent of Target" card)
+- Project breakdown with donut chart and legend  
 - Task breakdown with percentage distribution
 - All summaries update based on selected date and view
 
@@ -103,6 +196,32 @@ interface Project {
 - Previous/next navigation buttons
 - Calendar date picker widget
 - Automatic "Today" detection for summary titles
+
+### Top 3 Page (`src/pages/TodayPage.tsx`) - Primary Daily Planning Interface
+**Purpose:** Dedicated daily planning workspace focused on the Top 3 Focus prioritization system
+
+**Layout:**
+- **Left Section**: Top 3 Focus component with drag-and-drop priority slots
+- **Right Section**: TaskInput + conditional display (PendingTasksList by default, TaskDetails when task selected)
+
+**Top 3 Focus System:**
+- Three numbered priority slots (1, 2, 3) for daily focus tasks
+- Drag-and-drop interface for adding/removing/reordering focus tasks
+- Visual feedback during drag operations with hover states
+- Tasks can be dragged from pending lists into focus slots
+- Focus tasks can be dragged back to pending tasks to remove from focus (no separate drop zone)
+- Completed focus tasks remain visible in slots with visual completion indicators
+
+**Pending Tasks Integration:**
+- Shows all pending tasks grouped by project when no task is selected
+- Seamless drag-and-drop between pending tasks and focus slots
+- Click any task to switch to detailed TaskDetails view
+- TaskInput allows quick task creation directly from the daily planning interface
+
+**Navigation Integration:**
+- Positioned as second item in global navigation (Home → **Top 3** → Timer → To-do → History)
+- Uses star icon (⭐) to emphasize priority focus
+- Auto-saves all focus priorities and integrates with timer for quick session starts
 
 ### TimerPage (`src/pages/TimerPage.tsx`)
 **Timer Modes:**
@@ -126,19 +245,18 @@ interface Project {
 - Notes persist when session is saved to Previous Sessions
 - Task-level notes are saved when new todos are created
 
-### TodoPage (`src/pages/TodoPage.tsx`)
+### To-do Page (`src/pages/TodoPage.tsx`) - Comprehensive Task Management
 **Task Management Views:**
 - **Inbox**: Tasks without project assignment
-- **Today**: All pending tasks with Top 3 Focus prioritization system
+- **Complete View**: All pending tasks across all projects
 - **Project Views**: Tasks filtered by specific project
 - **Completed**: Tasks grouped by completion date with collapsible sections
 - **Trash**: Soft-deleted tasks with restore/permanent delete options
 
-**Top 3 Focus System:**
-- Special priority system in Today view with 3 numbered slots
-- Drag-and-drop to assign tasks to focus positions 1, 2, or 3
-- Visual drop zones for adding/removing focus priorities
-- Integrates with timer page for quick session starts
+**Three-Panel Layout:**
+- **Left Panel**: Sidebar navigation with project hierarchy and view switching
+- **Center Panel**: Task list with inline editing and drag-and-drop reordering
+- **Right Panel**: TaskDetails component for selected task information
 
 **Task Operations:**
 - Create, edit, complete, delete (soft), restore, permanent delete
@@ -185,6 +303,8 @@ interface Project {
 **Task Components:**
 - **TodoItem**: Checkbox, inline editing, project tags, drag-and-drop support
 - **TaskDetails/TaskFocusDetail**: Task information, project assignment, notes, previous sessions
+- **PendingTasksList**: Grouped display of pending tasks by project with drag-and-drop support
+- **TaskInput**: Quick task creation with project assignment
 - **ProjectSelector**: Dropdown with project creation capability
 
 **Session Components:**
@@ -248,6 +368,7 @@ interface Project {
 - `focusTimerSessions` - Array of Session objects
 - `focusTimerProjects` - Array of Project objects (migrated from legacy string array)
 - `focusTimerTodos` - Array of Todo objects
+- `focusTimerDailyGoal` - Number representing daily work goal in hours (default: 8)
 
 ### Data Migration & Cleanup
 - Automatic migration from legacy project format (string array to Project objects)
@@ -272,10 +393,11 @@ interface Project {
 
 ### Current Limitations & Technical Debt
 - **Project Linking**: Mixed ID/name linking strategies create potential inconsistencies
-- **Timeline View**: Only available in day view mode
+- **Timeline View**: Only available in day view mode (week/month/year show summaries only)
 - **Data Export**: No built-in export functionality
 - **Mobile Responsiveness**: Optimized primarily for desktop use
 - **Complex Context**: Large context provider managing many responsibilities
+- **Top 3 Persistence**: Top 3 Focus priorities persist indefinitely (no daily reset functionality)
 
 ### Testing & Quality
 - TypeScript compilation ensures type safety
@@ -293,8 +415,9 @@ interface Project {
 
 ### Pages
 - `src/pages/HomePage.tsx` - Dashboard with timeline and summaries
+- `src/pages/TodayPage.tsx` - Top 3 daily planning interface (actually named TodayPage.tsx but displays as "Top 3")
 - `src/pages/TimerPage.tsx` - Timer/stopwatch functionality
-- `src/pages/TodoPage.tsx` - Task management and projects
+- `src/pages/TodoPage.tsx` - Comprehensive task and project management
 - `src/pages/HistoryPage.tsx` - Session history and editing
 
 ### Key Components
@@ -307,3 +430,34 @@ interface Project {
 - `src/hooks/` - Custom React hooks
 - `src/utils/` - Utility functions for formatting and colors
 - `src/styles.css` - Application-wide styles
+
+## Recent Enhancements & Features
+
+### UI/UX Improvements
+- **Rounded Corners**: Consistent 8px border-radius across all components for visual cohesion
+- **Enhanced Scroll Behavior**: Component-level scrolling instead of page-level scrolling for better UX
+- **Visual Consistency**: Matching background colors and styling across TaskDetails components
+- **Drag & Drop Refinements**: Improved visual feedback and simplified interaction patterns
+
+### Daily Work Goal Customization
+- **Settings Modal**: Click settings icon on "Percent of Target" stat card to adjust daily work goal
+- **Validation**: Goals constrained to 0.5-24 hours with user-friendly error messages
+- **Real-time Updates**: Goal changes immediately reflect in all dashboard calculations
+- **Persistent Storage**: User preferences saved to localStorage and restored on app restart
+
+### Navigation & Layout Enhancements
+- **Dedicated Top 3 Page**: Moved Top 3 Focus from To-do page to standalone daily planning interface
+- **Reordered Navigation**: Optimized flow - Home → Top 3 → Timer → To-do → History
+- **Three-Panel To-do Layout**: Enhanced task management with dedicated sidebar, content, and details panels
+- **Conditional Display Patterns**: Smart switching between PendingTasksList and TaskDetails based on selection
+
+### Workflow Optimizations
+- **Enhanced Drag & Drop**: Direct drag from Top 3 Focus to Pending Tasks to remove from focus (no drop zone needed)
+- **Quick Task Creation**: TaskInput positioned optimally on Top 3 page for immediate daily planning
+- **Seamless Integration**: Focus priorities integrate with timer page for instant session starts
+- **Visual Priority Indicators**: Clear visual distinction for focus tasks vs. regular tasks
+
+### Data & Performance
+- **Automatic Migration**: Seamless upgrade from legacy data formats without user intervention
+- **Error Boundary**: Application-wide error handling prevents crashes and data loss
+- **Optimized Rendering**: Component-level scroll containers prevent unnecessary page reflows

@@ -4,7 +4,7 @@ import type { Session } from '../types';
 
 type ViewType = 'day' | 'week' | 'month' | 'year' | 'custom';
 
-export const useDashboardData = (sessions: Session[], currentView: ViewType, selectedDate: Date) => {
+export const useDashboardData = (sessions: Session[], currentView: ViewType, selectedDate: Date, dailyWorkGoalHours: number = 8) => {
     return useMemo(() => {
         let startDate = new Date(selectedDate);
         startDate.setHours(0, 0, 0, 0);
@@ -59,9 +59,9 @@ export const useDashboardData = (sessions: Session[], currentView: ViewType, sel
         }));
         
         const targetHours = 
-            currentView === 'week' ? 40 : 
-            currentView === 'month' ? 160 : 
-            currentView === 'year' ? 2000 : 8;
+            currentView === 'week' ? dailyWorkGoalHours * 7 : 
+            currentView === 'month' ? dailyWorkGoalHours * 30 : 
+            currentView === 'year' ? dailyWorkGoalHours * 365 : dailyWorkGoalHours;
 
         const focusMs = dataByProject['Focus'] || 0;
         const focusPercent = totalMsInView > 0 ? Math.round((focusMs / totalMsInView) * 100) : 0;
@@ -74,5 +74,5 @@ export const useDashboardData = (sessions: Session[], currentView: ViewType, sel
             targetHours,
             focusPercent,
         };
-    }, [sessions, currentView, selectedDate]);
+    }, [sessions, currentView, selectedDate, dailyWorkGoalHours]);
 };

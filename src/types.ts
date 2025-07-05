@@ -28,4 +28,29 @@ export interface Todo {
   deleted: boolean; // Soft delete flag
   deletedAt?: Date; // When the task was deleted
   focusOrder?: number; // 1, 2, or 3 for Top 3 Focus, undefined for regular tasks
+  focusSetDate?: Date; // When task was added to focus
+  focusCompletedDate?: Date; // When focus task was completed
+}
+
+// New interface for focus history
+export interface FocusHistory {
+  id: string;
+  date: Date;
+  focusTasks: {
+    position: 1 | 2 | 3;
+    todoId: string;
+    todoText: string;
+    projectId: string;
+    completed: boolean;
+    completedAt?: Date;
+  }[];
+  resetType: 'manual' | 'auto' | 'continued' | 'clear' | 'preserve-incomplete';
+}
+
+// New settings interface for focus behavior
+export interface FocusSettings {
+  autoResetEnabled: boolean;
+  resetTime: string; // "00:00" format for daily reset time
+  preserveIncomplete: boolean;
+  showCompletionCelebration: boolean;
 }

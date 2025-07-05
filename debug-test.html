@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permanently Delete Test</title>
+</head>
+<body>
+    <h1>Permanently Delete Functionality Test</h1>
+    <p>This is a test file to investigate the permanently delete issue.</p>
+    
+    <h2>Analysis Summary:</h2>
+    <ul>
+        <li>TodoItem component shows trash actions when todo.deleted is true</li>
+        <li>Trash view filters todos to show only deleted items</li>
+        <li>Permanently delete button calls permanentlyDeleteTodo function</li>
+        <li>permanentlyDeleteTodo removes the todo from the array completely</li>
+    </ul>
+    
+    <h2>Potential Issues:</h2>
+    <ul>
+        <li>Check if todos are actually being marked as deleted: true</li>
+        <li>Verify trash view is correctly filtering deleted todos</li>
+        <li>Confirm TodoItem props are correctly passed in trash view</li>
+        <li>Check if hideProjectBadge prop is interfering with trash actions</li>
+    </ul>
+</body>
+</html>

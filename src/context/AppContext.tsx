@@ -3,10 +3,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import type { Session, Todo, Project } from '../types';
+import type { Session, Todo, Project, FocusHistory, FocusSettings } from '../types';
 import toast from 'react-hot-toast';
 
-type Page = 'home' | 'timer' | 'history' | 'todo';
+type Page = 'home' | 'top3' | 'timer' | 'history' | 'todo' | 'settings';
 
 interface AppContextType {
     // Page Navigation
@@ -39,12 +39,29 @@ interface AppContextType {
     permanentlyDeleteTodo: (todoId: string) => void; // Permanent delete
     cleanupOldDeletedTodos: () => void; // Remove items older than 30 days
 
+    // Work Goals
+    dailyWorkGoalHours: number;
+    setDailyWorkGoalHours: (hours: number) => void;
+
     // Interaction between pages
     activeTodoId: string | null;
     setActiveTodoId: React.Dispatch<React.SetStateAction<string | null>>;
     selectedTodoId: string | null;
     setSelectedTodoId: React.Dispatch<React.SetStateAction<string | null>>;
     getSessionsForTodo: (todoId: string) => Session[];
+
+    // Focus Management
+    focusHistory: FocusHistory[];
+    focusSettings: FocusSettings;
+    setFocusOrder: (todoId: string, order: number | undefined) => void;
+    clearFocusTasks: () => void;
+    resetDailyFocus: (resetType: FocusHistory['resetType']) => void;
+    updateFocusSettings: (updates: Partial<FocusSettings>) => void;
+    getTodaysFocusTasks: () => Todo[];
+    getLastFocusDate: () => Date | null;
+    checkForDailyReset: () => boolean;
+    markAppLaunch: () => void;
+    clearFocusHistory: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -55,8 +72,17 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const [sessions, setSessions] = useLocalStorage<Session[]>('focusTimerSessions', []);
     const [projects, setProjects] = useLocalStorage<Project[]>('focusTimerProjects', []);
     const [todos, setTodos] = useLocalStorage<Todo[]>('focusTimerTodos', []);
+    const [dailyWorkGoalHours, setDailyWorkGoalHours] = useLocalStorage<number>('focusTimerDailyGoal', 8);
     const [activeTodoId, setActiveTodoId] = useState<string | null>(null);
     const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null);
+    const [focusHistory, setFocusHistory] = useLocalStorage<FocusHistory[]>('focusTimerFocusHistory', []);
+    const [focusSettings, setFocusSettings] = useLocalStorage<FocusSettings>('focusTimerFocusSettings', {
+        autoResetEnabled: true,
+        resetTime: '06:00',
+        preserveIncomplete: true,
+        showCompletionCelebration: true
+    });
+    const [lastAppLaunchDate, setLastAppLaunchDate] = useLocalStorage<string | null>('focusTimerLastLaunch', null);
 
     // --- Session Functions ---
     const addSession = (session: Omit<Session, 'id'>) => {
@@ -202,10 +228,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 // Set completedAt when marking as complete
                 if (updates.completed === true && !todo.completed) {
                     updatedTodo.completedAt = new Date();
+                    // If this is a focus task, mark focus completed date
+                    if (todo.focusOrder !== undefined) {
+                        updatedTodo.focusCompletedDate = new Date();
+                    }
                 }
                 // Clear completedAt when marking as incomplete
                 else if (updates.completed === false && todo.completed) {
                     updatedTodo.completedAt = undefined;
+                    // Clear focus completed date
+                    updatedTodo.focusCompletedDate = undefined;
                 }
                 
                 return updatedTodo;
@@ -262,6 +294,132 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const getSessionsForTodo = useCallback((todoId: string) => {
         return sessions.filter(session => session.todoId === todoId);
     }, [sessions]);
+
+    // --- Focus Management Functions ---
+    const setFocusOrder = useCallback((todoId: string, order: number | undefined) => {
+        setTodos(prev => prev.map(todo => {
+            if (todo.id === todoId) {
+                const updatedTodo = { ...todo, focusOrder: order };
+                if (order !== undefined) {
+                    updatedTodo.focusSetDate = new Date();
+                } else {
+                    updatedTodo.focusSetDate = undefined;
+                    updatedTodo.focusCompletedDate = undefined;
+                }
+                return updatedTodo;
+            }
+            return todo;
+        }));
+    }, [setTodos]);
+
+    const clearFocusTasks = useCallback(() => {
+        setTodos(prev => prev.map(todo => ({
+            ...todo,
+            focusOrder: undefined,
+            focusSetDate: undefined,
+            focusCompletedDate: undefined
+        })));
+    }, [setTodos]);
+
+    const resetDailyFocus = useCallback((resetType: FocusHistory['resetType']) => {
+        const currentFocusTasks = todos.filter(todo => todo.focusOrder !== undefined);
+        
+        // Archive current focus tasks to history
+        if (currentFocusTasks.length > 0) {
+            const historyEntry: FocusHistory = {
+                id: `focus_${Date.now()}`,
+                date: new Date(),
+                focusTasks: currentFocusTasks.map(todo => ({
+                    position: todo.focusOrder as 1 | 2 | 3,
+                    todoId: todo.id,
+                    todoText: todo.text,
+                    projectId: todo.projectId,
+                    completed: todo.completed,
+                    completedAt: todo.completedAt
+                })),
+                resetType
+            };
+            setFocusHistory(prev => [historyEntry, ...prev]);
+        }
+
+        // Reset focus tasks based on type
+        if (resetType === 'clear') {
+            clearFocusTasks();
+        } else if (resetType === 'preserve-incomplete') {
+            setTodos(prev => prev.map(todo => {
+                if (todo.focusOrder !== undefined && todo.completed) {
+                    return {
+                        ...todo,
+                        focusOrder: undefined,
+                        focusSetDate: undefined,
+                        focusCompletedDate: undefined
+                    };
+                }
+                return todo;
+            }));
+        }
+    }, [todos, setFocusHistory, setTodos, clearFocusTasks]);
+
+    const updateFocusSettings = useCallback((updates: Partial<FocusSettings>) => {
+        setFocusSettings(prev => ({ ...prev, ...updates }));
+    }, [setFocusSettings]);
+
+    const getTodaysFocusTasks = useCallback(() => {
+        return todos
+            .filter(todo => todo.focusOrder !== undefined)
+            .sort((a, b) => (a.focusOrder || 0) - (b.focusOrder || 0));
+    }, [todos]);
+
+    const getLastFocusDate = useCallback(() => {
+        if (focusHistory.length === 0) return null;
+        return focusHistory[0].date;
+    }, [focusHistory]);
+
+    const checkForDailyReset = useCallback(() => {
+        if (!focusSettings.autoResetEnabled) return false;
+        
+        const now = new Date();
+        const today = now.toDateString();
+        
+        // If this is the first launch ever, mark it but don't show reset
+        if (!lastAppLaunchDate) {
+            setLastAppLaunchDate(today);
+            return false;
+        }
+        
+        // If we launched on a different date, check if we should reset
+        if (lastAppLaunchDate !== today) {
+            const lastLaunch = new Date(lastAppLaunchDate);
+            const resetTime = focusSettings.resetTime.split(':');
+            const resetHour = parseInt(resetTime[0]);
+            const resetMinute = parseInt(resetTime[1]);
+            
+            // Create reset time for today
+            const todayResetTime = new Date(now);
+            todayResetTime.setHours(resetHour, resetMinute, 0, 0);
+            
+            // Create reset time for yesterday
+            const yesterdayResetTime = new Date(todayResetTime);
+            yesterdayResetTime.setDate(yesterdayResetTime.getDate() - 1);
+            
+            // If current time is past today's reset time AND
+            // last launch was before yesterday's reset time
+            if (now >= todayResetTime && lastLaunch < yesterdayResetTime) {
+                return true;
+            }
+        }
+        
+        return false;
+    }, [focusSettings.autoResetEnabled, focusSettings.resetTime, lastAppLaunchDate, setLastAppLaunchDate]);
+    
+    const markAppLaunch = useCallback(() => {
+        const today = new Date().toDateString();
+        setLastAppLaunchDate(today);
+    }, [setLastAppLaunchDate]);
+
+    const clearFocusHistory = useCallback(() => {
+        setFocusHistory([]);
+    }, [setFocusHistory]);
 
     // --- Data Migration and Cleanup ---
     useEffect(() => {
@@ -332,11 +490,24 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         restoreTodo,
         permanentlyDeleteTodo,
         cleanupOldDeletedTodos,
+        dailyWorkGoalHours,
+        setDailyWorkGoalHours,
         activeTodoId,
         setActiveTodoId,
         selectedTodoId,
         setSelectedTodoId,
         getSessionsForTodo,
+        focusHistory,
+        focusSettings,
+        setFocusOrder,
+        clearFocusTasks,
+        resetDailyFocus,
+        updateFocusSettings,
+        getTodaysFocusTasks,
+        getLastFocusDate,
+        checkForDailyReset,
+        markAppLaunch,
+        clearFocusHistory,
     };
 
     return (

@@ -11,7 +11,7 @@ import { useAppContext } from '../context/AppContext';
 // This component no longer accepts props for state management.
 const HomePage: React.FC = () => {
     // Get global state directly from the context.
-    const { sessions, projects } = useAppContext();
+    const { sessions, projects, dailyWorkGoalHours } = useAppContext();
 
     // Internal UI state remains here.
     const [currentView, setCurrentView] = useState<'day' | 'week' | 'month' | 'year'>('day');
@@ -42,7 +42,7 @@ const HomePage: React.FC = () => {
         projectBreakdown,
         topCategories,
         targetHours,
-    } = useDashboardData(sessions, currentView, selectedDate);
+    } = useDashboardData(sessions, currentView, selectedDate, dailyWorkGoalHours);
     
     // Logic for calculating colors is still needed and remains here.
     const allProjectsForColors = useMemo(() => {

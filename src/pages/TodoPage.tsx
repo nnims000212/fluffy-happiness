@@ -2,7 +2,6 @@ import React, { useState, useRef, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import TaskInput from '../components/TaskInput';
 import TaskDetails from '../components/TaskDetails';
-import PendingTasksList from '../components/PendingTasksList';
 import TodoItem from '../components/TodoItem';
 import type { Todo } from '../types';
 
@@ -13,7 +12,7 @@ const TodoPage: React.FC = () => {
     
     // Project filtering state - start with inbox view
     const [selectedProject, setSelectedProject] = useState<string | null>('');
-    const [selectedView, setSelectedView] = useState<'inbox' | 'project' | 'completed' | 'trash' | 'today'>('inbox');
+    const [selectedView, setSelectedView] = useState<'inbox' | 'project' | 'completed' | 'trash' | 'complete'>('inbox');
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [editingProject, setEditingProject] = useState<string | null>(null);
     const [editProjectName, setEditProjectName] = useState('');
@@ -28,9 +27,6 @@ const TodoPage: React.FC = () => {
     const [inboxCompletedCollapsed, setInboxCompletedCollapsed] = useState(false);
     const [projectCompletedCollapsed, setProjectCompletedCollapsed] = useState<{[key: string]: boolean}>({});
     
-    // Drag feedback state
-    const [dragOverFocusSlot, setDragOverFocusSlot] = useState<number | null>(null);
-    const [dragOverPending, setDragOverPending] = useState(false);
 
     // Sync project notes value when selected project changes
     React.useEffect(() => {
@@ -48,8 +44,8 @@ const TodoPage: React.FC = () => {
             return todos.filter(todo => todo.deleted);
         } else if (selectedView === 'completed') {
             return todos.filter(todo => todo.completed && !todo.deleted);
-        } else if (selectedView === 'today') {
-            // Today view - show all pending tasks regardless of project
+        } else if (selectedView === 'complete') {
+            // Complete view - show all pending tasks from all projects
             return todos.filter(todo => !todo.completed && !todo.deleted);
         } else if (selectedView === 'project' && selectedProject !== null) {
             return todos.filter(todo => todo.projectId === selectedProject && !todo.deleted);
@@ -74,9 +70,6 @@ const TodoPage: React.FC = () => {
         return todos.filter(todo => todo.projectId === '' && !todo.completed && !todo.deleted).length;
     };
 
-    const getTodayPendingCount = () => {
-        return todos.filter(todo => !todo.completed && !todo.deleted).length;
-    };
 
     const getCompletedCount = () => {
         return todos.filter(todo => todo.completed && !todo.deleted).length;
@@ -237,8 +230,6 @@ const TodoPage: React.FC = () => {
         // Clear all drag states
         dragItem.current = null;
         dragOverItem.current = null;
-        setDragOverFocusSlot(null);
-        setDragOverPending(false);
     };
 
     return (
@@ -259,14 +250,14 @@ const TodoPage: React.FC = () => {
                             <span className="sidebar-count">{getInboxCount()}</span>
                         </div>
                         <div 
-                            className={`sidebar-item ${selectedView === 'today' ? 'active' : ''}`}
+                            className={`sidebar-item ${selectedView === 'complete' ? 'active' : ''}`}
                             onClick={() => {
-                                setSelectedView('today');
+                                setSelectedView('complete');
                                 setSelectedProject('');
                             }}
                         >
-                            <span>📅 Today</span>
-                            <span className="sidebar-count">{getTodayPendingCount()}</span>
+                            <span>📋 Complete View</span>
+                            <span className="sidebar-count">{todos.filter(todo => !todo.completed && !todo.deleted).length}</span>
                         </div>
                     </div>
 
@@ -367,30 +358,33 @@ const TodoPage: React.FC = () => {
                         <>
                             <div className="sidebar-divider"></div>
                             <div className={`sidebar-section ${archivedProjectsCollapsed ? 'collapsed' : ''}`}>
-                                <div 
-                                    className="sidebar-section-header"
-                                    onClick={() => setArchivedProjectsCollapsed(!archivedProjectsCollapsed)}
-                                >
-                                    <span className={`collapse-icon ${archivedProjectsCollapsed ? 'collapsed' : ''}`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="6 9 12 15 18 9"></polyline>
-                                        </svg>
-                                    </span>
-                                    <h3>Archived Projects</h3>
+                                <div className="sidebar-section-header">
+                                    <div 
+                                        className="sidebar-section-title"
+                                        onClick={() => setArchivedProjectsCollapsed(!archivedProjectsCollapsed)}
+                                    >
+                                        <span className={`collapse-icon ${archivedProjectsCollapsed ? 'collapsed' : ''}`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                            </svg>
+                                        </span>
+                                        <h3>Archived Projects</h3>
+                                    </div>
                                 </div>
                                 {!archivedProjectsCollapsed && archivedProjects.map(project => {
                                     const count = getProjectCount(project.name);
+                                    const isCurrentProject = selectedView === 'project' && selectedProject === project.name;
                                     return (
                                         <div 
                                             key={project.id}
-                                            className="sidebar-item archived-project"
+                                            className={`sidebar-item archived-project ${isCurrentProject ? 'active' : ''}`}
                                             onClick={() => {
                                                 setSelectedView('project');
                                                 setSelectedProject(project.name);
                                             }}
                                         >
                                             <span>{project.name}</span>
-                                            <span className="sidebar-count">{count}</span>
+                                            {!isCurrentProject && <span className="sidebar-count">{count}</span>}
                                         </div>
                                     );
                                 })}
@@ -538,7 +532,7 @@ const TodoPage: React.FC = () => {
                         ) : (
                             <h2>
                                 {selectedView === 'inbox' && '📥 Inbox'}
-                                {selectedView === 'today' && '📅 Today'}
+                                {selectedView === 'complete' && '📋 Complete View'}
                                 {selectedView === 'completed' && '✅ Completed'}
                                 {selectedView === 'trash' && '🗑️ Trash'}
                             </h2>
@@ -565,7 +559,7 @@ const TodoPage: React.FC = () => {
                 )}
                 
                 {selectedView !== 'completed' && selectedView !== 'trash' && (
-                    <TaskInput currentProjectId={selectedView === 'project' ? selectedProject || '' : selectedView === 'today' ? '' : ''} />
+                    <TaskInput currentProjectId={selectedView === 'project' ? selectedProject || '' : selectedView === 'complete' ? '' : ''} />
                 )}
                 
                 <div 
@@ -583,8 +577,8 @@ const TodoPage: React.FC = () => {
                                 ? 'No deleted tasks in trash.'
                                 : selectedView === 'completed' 
                                     ? 'No completed tasks yet.'
-                                    : selectedView === 'today'
-                                        ? 'No pending tasks for today. Add a task above!'
+                                    : selectedView === 'complete'
+                                        ? 'No pending tasks. Add a task above!'
                                         : selectedView === 'project' 
                                             ? `No tasks for ${selectedProject || 'Inbox'}. Add a task above!`
                                             : 'No tasks in inbox yet. Add a task above!'
@@ -604,6 +598,7 @@ const TodoPage: React.FC = () => {
                                         onDragEnter={() => {}}
                                         onDragEnd={() => {}}
                                         isDraggingOver={false}
+                                        hideProjectBadge={false}
                                     />
                                 ))}
                             </div>
@@ -643,6 +638,7 @@ const TodoPage: React.FC = () => {
                                                             onDragEnter={() => {}}
                                                             onDragEnd={() => {}}
                                                             isDraggingOver={false}
+                                                            hideProjectBadge={false}
                                                         />
                                                     ))}
                                                 </div>
@@ -652,123 +648,25 @@ const TodoPage: React.FC = () => {
                                 })}
                             </div>
                         )
-                    ) : selectedView === 'today' ? (
-                        // Today view - show Top 3 Focus and Pending tasks only
+                    ) : selectedView === 'complete' ? (
+                        // Complete view - show all pending tasks with project badges
                         <>
-                            {/* Top 3 Focus Slots */}
-                            <div 
-                                className="top-focus-section"
-                                onClick={(e) => {
-                                    // Deselect task when clicking on empty space in Today view
-                                    if (e.target === e.currentTarget) {
-                                        setSelectedTodoId(null);
-                                    }
-                                }}
-                            >
-                                <h3 className="todo-list-header">Top 3 Focus</h3>
-                                <p className="focus-subtitle">Drag your most important tasks here to prioritize them for today</p>
-                                <div className="top-focus-slots">
-                                    {[1, 2, 3].map(position => {
-                                        const focusTask = todos.find(todo => todo.focusOrder === position && !todo.deleted);
-                                        return (
-                                            <div 
-                                                key={position} 
-                                                className={`focus-slot ${focusTask ? 'has-task' : 'empty'} ${focusTask?.completed ? 'completed' : ''} ${dragOverFocusSlot === position ? 'drag-over' : ''}`}
-                                                onDragOver={(e) => {
-                                                    e.preventDefault();
-                                                    setDragOverFocusSlot(position);
-                                                }}
-                                                onDragLeave={() => setDragOverFocusSlot(null)}
-                                                onDrop={(e) => {
-                                                    e.preventDefault();
-                                                    setDragOverFocusSlot(null);
-                                                    const todoId = dragItem.current;
-                                                    if (todoId) {
-                                                        const draggedTodo = todos.find(t => t.id === todoId);
-                                                        const targetSlotTodo = focusTask; // The task currently in this position
-                                                        
-                                                        if (draggedTodo) {
-                                                            setTodos(prev => prev.map(t => {
-                                                                // If dragging a focus task over another focus task, swap positions
-                                                                if (draggedTodo.focusOrder && targetSlotTodo) {
-                                                                    if (t.id === todoId) {
-                                                                        return { ...t, focusOrder: position };
-                                                                    } else if (t.id === targetSlotTodo.id) {
-                                                                        return { ...t, focusOrder: draggedTodo.focusOrder };
-                                                                    }
-                                                                }
-                                                                // If dragging a focus task to an empty slot, just move it
-                                                                else if (draggedTodo.focusOrder && !targetSlotTodo) {
-                                                                    if (t.id === todoId) {
-                                                                        return { ...t, focusOrder: position };
-                                                                    }
-                                                                }
-                                                                // If dragging a pending task over a focus task, replace
-                                                                else if (!draggedTodo.focusOrder) {
-                                                                    if (t.id === todoId) {
-                                                                        return { ...t, focusOrder: position };
-                                                                    } else if (t.focusOrder === position) {
-                                                                        return { ...t, focusOrder: undefined };
-                                                                    }
-                                                                }
-                                                                return t;
-                                                            }));
-                                                            // Don't auto-select task when dragging - only on click
-                                                        }
-                                                    }
-                                                }}
-                                            >
-                                                {focusTask ? (
-                                                    <TodoItem 
-                                                        key={focusTask.id} 
-                                                        todo={focusTask}
-                                                        onDragStart={handleDragStart}
-                                                        onDragEnter={handleDragEnter}
-                                                        onDragEnd={handleDragEnd}
-                                                        isDraggingOver={false}
-                                                        allowCompletedDrag={true}
-                                                    />
-                                                ) : (
-                                                    <div className="empty-focus-slot">
-                                                        <span className="focus-number">{position}</span>
-                                                        <span className="focus-placeholder">Drag a task here</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                
-                                {/* Drop zone to remove from focus */}
-                                <div 
-                                    className={`focus-remove-zone ${dragOverPending ? 'drag-over' : ''}`}
-                                    onDragOver={(e) => {
-                                        e.preventDefault();
-                                        setDragOverPending(true);
-                                    }}
-                                    onDragLeave={() => setDragOverPending(false)}
-                                    onDrop={(e) => {
-                                        e.preventDefault();
-                                        setDragOverPending(false);
-                                        const todoId = dragItem.current;
-                                        if (todoId) {
-                                            const todo = todos.find(t => t.id === todoId);
-                                            if (todo && todo.focusOrder) {
-                                                // Remove from Top 3 Focus
-                                                setTodos(prev => prev.map(t => 
-                                                    t.id === todoId ? { ...t, focusOrder: undefined } : t
-                                                ));
-                                            }
-                                        }
-                                    }}
-                                >
-                                    <div className="focus-remove-content">
-                                        <span className="focus-remove-icon">↩️</span>
-                                        <span className="focus-remove-text">Drop here to remove from focus</span>
+                            {pendingTodos.length > 0 && (
+                                <div className="todo-list-section">
+                                    <div className="todo-list-container">
+                                        {pendingTodos.map(todo => (
+                                            <TodoItem 
+                                                key={todo.id} 
+                                                todo={todo}
+                                                onDragStart={handleDragStart}
+                                                onDragEnter={handleDragEnter}
+                                                onDragEnd={handleDragEnd}
+                                                isDraggingOver={dragOverItem.current === todo.id}
+                                                hideProjectBadge={false}
+                                            />))}
                                     </div>
                                 </div>
-                            </div>
-
+                            )}
                         </>
                     ) : (
                         // Project and Inbox views - show both pending and completed with collapsible completed
@@ -784,6 +682,7 @@ const TodoPage: React.FC = () => {
                                                 onDragEnter={handleDragEnter}
                                                 onDragEnd={handleDragEnd}
                                                 isDraggingOver={dragOverItem.current === todo.id}
+                                                hideProjectBadge={selectedView === 'project'}
                                             />))}
                                     </div>
                                 </div>
@@ -837,21 +736,7 @@ const TodoPage: React.FC = () => {
 
             {/* Right Details Panel */}
             <div className="todo-details">
-                {selectedView === 'today' ? (
-                    // Show TaskDetails only if a focus task is selected, otherwise show PendingTasksList
-                    (selectedTodo && selectedTodo.focusOrder) ? (
-                        <TaskDetails selectedTodo={selectedTodo} sessions={sessions}/>
-                    ) : (
-                        <PendingTasksList 
-                            onDragStart={handleDragStart}
-                            onDragEnter={handleDragEnter}
-                            onDragEnd={handleDragEnd}
-                            dragOverItem={dragOverItem}
-                        />
-                    )
-                ) : (
-                    <TaskDetails selectedTodo={selectedTodo} sessions={sessions}/>
-                )}
+                <TaskDetails selectedTodo={selectedTodo} sessions={sessions}/>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 // src/components/PendingTasksList.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import TodoItem from './TodoItem';
 import type { Todo } from '../types';
@@ -9,15 +9,18 @@ interface PendingTasksListProps {
     onDragEnter: (e: React.DragEvent<HTMLDivElement>, id: string) => void;
     onDragEnd: () => void;
     dragOverItem: React.MutableRefObject<string | null>;
+    dragItem: React.MutableRefObject<string | null>;
 }
 
 const PendingTasksList: React.FC<PendingTasksListProps> = ({
     onDragStart,
     onDragEnter,
     onDragEnd,
-    dragOverItem
+    dragOverItem,
+    dragItem
 }) => {
-    const { todos } = useAppContext();
+    const { todos, setTodos } = useAppContext();
+    const [dragOverPending, setDragOverPending] = useState(false);
 
     // Get all pending tasks (not completed, not deleted, no focus order)
     const pendingTasks = todos.filter(todo => 
@@ -44,7 +47,28 @@ const PendingTasksList: React.FC<PendingTasksListProps> = ({
     });
 
     return (
-        <div className="pending-tasks-list">
+        <div 
+            className={`pending-tasks-list ${dragOverPending ? 'drag-over' : ''}`}
+            onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverPending(true);
+            }}
+            onDragLeave={() => setDragOverPending(false)}
+            onDrop={(e) => {
+                e.preventDefault();
+                setDragOverPending(false);
+                const todoId = dragItem.current;
+                if (todoId) {
+                    const todo = todos.find(t => t.id === todoId);
+                    if (todo && todo.focusOrder) {
+                        // Remove from Top 3 Focus
+                        setTodos(prev => prev.map(t => 
+                            t.id === todoId ? { ...t, focusOrder: undefined } : t
+                        ));
+                    }
+                }
+            }}
+        >
             <div className="pending-tasks-content">
                 {pendingTasks.length === 0 ? (
                     <div className="empty-pending-tasks">
@@ -97,11 +121,6 @@ const PendingTasksList: React.FC<PendingTasksListProps> = ({
                     </div>
                 )}
                 
-                <div className="pending-tasks-footer">
-                    <p className="pending-help-text">
-                        💡 <strong>Tip:</strong> Drag tasks from here into your Top 3 Focus to prioritize them for today.
-                    </p>
-                </div>
             </div>
         </div>
     );

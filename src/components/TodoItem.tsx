@@ -1,5 +1,5 @@
 // src/components/TodoItem.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useAppContext } from '../context/AppContext';
 import { formatToHoursAndMinutes } from '../utils/formatters';
@@ -13,21 +13,13 @@ interface TodoItemProps {
     isDraggingOver: boolean;
     simplified?: boolean; // For use in pending tasks list
     allowCompletedDrag?: boolean; // Allow completed tasks to be draggable (for focus mode)
+    hideProjectBadge?: boolean; // Hide project badge when viewing specific project
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ todo, onDragStart, onDragEnter, onDragEnd, isDraggingOver, simplified = false, allowCompletedDrag = false }) => {
+const TodoItem: React.FC<TodoItemProps> = ({ todo, onDragStart, onDragEnter, onDragEnd, isDraggingOver, simplified = false, allowCompletedDrag = false, hideProjectBadge = false }) => {
     const { sessions, updateTodo, deleteTodo, setActivePage, setActiveTodoId, selectedTodoId, setSelectedTodoId, restoreTodo, permanentlyDeleteTodo } = useAppContext();
-    const [isEditing, setIsEditing] = useState(false);
-    const [editText, setEditText] = useState(todo.text);
 
     const isSelected = selectedTodoId === todo.id;
-
-    const handleSaveText = () => {
-        if (editText.trim()) {
-            updateTodo(todo.id, { text: editText.trim(), notes: todo.notes });
-            setIsEditing(false);
-        }
-    };
 
     const handleTrackTime = () => {
         if (todo.completed) {
@@ -39,9 +31,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, onDragStart, onDragEnter, onD
     };
 
     const handleSelectTodo = () => {
-        if (!isEditing) {
-            setSelectedTodoId(todo.id); // Bug Fix: Only set selected ID, not active ID for timer
-        }
+        setSelectedTodoId(todo.id); // Bug Fix: Only set selected ID, not active ID for timer
     };
 
     const totalTrackedMs = useMemo(() => {
@@ -72,35 +62,14 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, onDragStart, onDragEnter, onD
                     />
                     <span className="custom-checkbox-checkmark"></span>
                 </label>
-                {isEditing ? (
-                    <input 
-                        type="text"
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        onBlur={handleSaveText}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSaveText()}
-                        autoFocus
-                        className="todo-edit-input"
-                        onClick={(e) => e.stopPropagation()}
-                    />
-                ) : (
-                    <span 
-                        className="todo-text" 
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!todo.completed) {
-                                setIsEditing(true);
-                            }
-                        }}
-                    >
-                        {todo.text}
-                    </span>
-                )}
+                <span className="todo-text">
+                    {todo.text}
+                </span>
             </div>
             <div className="todo-item-details">
                 {!simplified && (
                     <>
-                        {todo.projectId && <span className="todo-project-tag">{todo.projectId}</span>}
+                        {todo.projectId && !hideProjectBadge && <span className="todo-project-tag">{todo.projectId}</span>}
                         {todo.notes && (
                             <span className="notes-indicator" title="Has notes">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>

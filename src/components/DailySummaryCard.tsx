@@ -1,9 +1,11 @@
 // src/components/DailySummaryCard.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatToHoursAndMinutes } from '../utils/formatters';
 import { getProjectColor } from '../utils/colors';
+import { useAppContext } from '../context/AppContext';
 import StatCard from './StatCard';
 import DonutChart from './DonutChart';
+import toast from 'react-hot-toast';
 
 interface DailySummaryCardProps {
     title: string;
@@ -15,8 +17,33 @@ interface DailySummaryCardProps {
 }
 
 const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInView, targetHours, projectBreakdown, topCategories, allProjectsForColors }) => {
+    const { dailyWorkGoalHours, setDailyWorkGoalHours } = useAppContext();
+    const [showGoalEditor, setShowGoalEditor] = useState(false);
+    const [tempGoalValue, setTempGoalValue] = useState(dailyWorkGoalHours.toString());
+    
     const totalHours = totalMsInView / 3600000;
     const percentOfTarget = targetHours > 0 ? Math.round((totalHours / targetHours) * 100) : 0;
+
+    const handleGoalSave = () => {
+        const newGoal = parseFloat(tempGoalValue);
+        if (newGoal > 0 && newGoal <= 24) {
+            setDailyWorkGoalHours(newGoal);
+            setShowGoalEditor(false);
+            toast.success(`Daily work goal updated to ${newGoal} hour${newGoal === 1 ? '' : 's'}!`);
+        } else {
+            toast.error('Please enter a valid goal between 0.5 and 24 hours');
+        }
+    };
+
+    const handleGoalCancel = () => {
+        setTempGoalValue(dailyWorkGoalHours.toString());
+        setShowGoalEditor(false);
+    };
+
+    // Sync temp value when goal changes
+    useEffect(() => {
+        setTempGoalValue(dailyWorkGoalHours.toString());
+    }, [dailyWorkGoalHours]);
     
     return (
         <div className="content-card daily-summary-card">
@@ -31,10 +58,9 @@ const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInVie
                 <StatCard 
                     title="Percent of Target" 
                     value={`${percentOfTarget}%`} 
-                    subtitle={`of ${targetHours} hr 0 min`}
+                    subtitle={`of ${targetHours} hr${targetHours === 1 ? '' : 's'}`}
                     progress={Math.min(percentOfTarget, 100)}
-                    trend={percentOfTarget >= 100 ? 'up' : percentOfTarget >= 50 ? 'neutral' : 'down'}
-                    trendValue={percentOfTarget >= 100 ? 'Goal achieved!' : `${Math.max(100 - percentOfTarget, 0)}% to go`}
+                    onSettingsClick={() => setShowGoalEditor(true)}
                 />
             </div>
             <div className="summary-breakdown">
@@ -76,6 +102,94 @@ const DailySummaryCard: React.FC<DailySummaryCardProps> = ({ title, totalMsInVie
                     )}
                 </div>
             </div>
+            
+            {/* Goal Editor Modal */}
+            {showGoalEditor && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: '#242529',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        border: '1px solid #333438',
+                        minWidth: '300px',
+                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
+                    }}>
+                        <h3 style={{ margin: '0 0 16px 0', color: '#EAEAEA' }}>Daily Work Goal</h3>
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ 
+                                display: 'block', 
+                                marginBottom: '8px', 
+                                color: '#888888',
+                                fontSize: '0.875rem'
+                            }}>
+                                Hours per day:
+                            </label>
+                            <input
+                                type="number"
+                                min="0.5"
+                                max="24"
+                                step="0.5"
+                                value={tempGoalValue}
+                                onChange={(e) => setTempGoalValue(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    backgroundColor: '#333438',
+                                    border: '1px solid #444549',
+                                    borderRadius: '6px',
+                                    color: '#EAEAEA',
+                                    fontSize: '1rem',
+                                    boxSizing: 'border-box'
+                                }}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleGoalSave();
+                                    if (e.key === 'Escape') handleGoalCancel();
+                                }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                            <button
+                                onClick={handleGoalCancel}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: 'transparent',
+                                    border: '1px solid #333438',
+                                    borderRadius: '6px',
+                                    color: '#888888',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleGoalSave}
+                                style={{
+                                    padding: '8px 16px',
+                                    backgroundColor: '#8A2BE2',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    color: '#EAEAEA',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

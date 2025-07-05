@@ -1,6 +1,7 @@
 // src/pages/SettingsPage.tsx
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
+import DataHealthCheck from '../components/layout/DataHealthCheck';
 import toast from 'react-hot-toast';
 
 const SettingsPage: React.FC = () => {
@@ -11,7 +12,8 @@ const SettingsPage: React.FC = () => {
         updateFocusSettings,
         focusHistory,
         clearFocusTasks,
-        clearFocusHistory 
+        clearFocusHistory,
+        todos
     } = useAppContext();
     
     const [tempWorkGoal, setTempWorkGoal] = useState(dailyWorkGoalHours.toString());
@@ -45,6 +47,28 @@ const SettingsPage: React.FC = () => {
             clearFocusTasks();
             toast.success('Current focus tasks cleared!');
         }
+    };
+
+    const handleTriggerResetCheck = () => {
+        const hasFocusTasks = todos.some(todo => todo.focusOrder !== undefined);
+        
+        if (!hasFocusTasks) {
+            toast('No focus tasks to reset', { icon: 'ℹ️' });
+            return;
+        }
+        
+        if (!focusSettings.autoResetEnabled) {
+            toast.error('Auto-reset is disabled. Enable it first to use reset functionality.');
+            return;
+        }
+        
+        // Reset the last launch date to trigger reset check on page reload
+        localStorage.setItem('focusTimerLastLaunch', JSON.stringify(new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString()));
+        toast.success('Reset check will trigger on next app reload. Reloading now...');
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     };
 
     return (
@@ -178,6 +202,29 @@ const SettingsPage: React.FC = () => {
                             Clear Current Focus
                         </button>
                     </div>
+
+                    <div className="setting-item">
+                        <div className="setting-info">
+                            <strong>Trigger Daily Reset</strong>
+                            <span>Manually trigger the daily focus reset modal</span>
+                        </div>
+                        <button 
+                            className="btn-secondary"
+                            onClick={handleTriggerResetCheck}
+                        >
+                            Trigger Reset Check
+                        </button>
+                    </div>
+                </div>
+
+                {/* System Health */}
+                <div className="settings-section">
+                    <div className="section-header">
+                        <h2>System Health</h2>
+                        <p>Monitor app performance and data integrity</p>
+                    </div>
+                    
+                    <DataHealthCheck />
                 </div>
 
                 {/* Application Info */}

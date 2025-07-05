@@ -1,9 +1,9 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { useAppContext } from '../context/AppContext';
-import TaskInput from '../components/TaskInput';
-import TaskDetails from '../components/TaskDetails';
-import TodoItem from '../components/TodoItem';
-import type { Todo } from '../types';
+import { useAppContext } from '../context/useAppContext';
+import TaskInput from '../components/features/tasks/TaskInput';
+import TaskDetails from '../components/features/tasks/TaskDetails';
+import TodoItem from '../components/features/tasks/TodoItem';
+import type { Todo } from '../types/index';
 
 const TodoPage: React.FC = () => {
     const { todos, setTodos, selectedTodoId, setSelectedTodoId, sessions, projects, addProject, deleteProject, renameProject, archiveProject, unarchiveProject, updateProject } = useAppContext();

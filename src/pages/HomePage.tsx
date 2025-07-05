@@ -1,12 +1,12 @@
 // src/pages/HomePage.tsx
 import React, { useState, useMemo, useRef } from 'react';
-import Timeline from '../components/Timeline';
-import DatePicker from '../components/DatePicker';
-import DailySummaryCard from '../components/DailySummaryCard';
+import Timeline from '../components/features/analytics/Timeline';
+import DatePicker from '../components/ui/modals/DatePicker';
+import DailySummaryCard from '../components/features/analytics/DailySummaryCard';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useTimelineScroll } from '../hooks/useTimelineScroll'; // Import the new hook
 import { formatToHoursAndMinutes } from '../utils/formatters';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 
 // This component no longer accepts props for state management.
 const HomePage: React.FC = () => {

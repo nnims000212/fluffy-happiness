@@ -7,8 +7,8 @@ import HomePage from './HomePage';
 import TodoPage from './TodoPage'; // <-- 1. Import the new page
 import TodayPage from './TodayPage';
 import SettingsPage from './SettingsPage';
-import DailyResetModal from '../components/DailyResetModal';
-import { useAppContext } from '../context/AppContext'; // <-- 2. Import context hook
+import DailyResetModal from '../components/ui/modals/DailyResetModal';
+import { useAppContext } from '../context/useAppContext'; // <-- 2. Import context hook
 
 const App: React.FC = () => {
     // 3. Get page state from context instead of local state
@@ -36,7 +36,9 @@ const App: React.FC = () => {
     // Check for daily reset on app launch
     useEffect(() => {
         const shouldReset = checkForDailyReset();
+        console.log('[Daily Reset Debug] Should reset:', shouldReset);
         if (shouldReset) {
+            console.log('[Daily Reset Debug] Setting showDailyResetModal to true');
             setShowDailyResetModal(true);
         } else {
             markAppLaunch();
@@ -126,6 +128,7 @@ const App: React.FC = () => {
                 <DailyResetModal 
                     isOpen={showDailyResetModal} 
                     onClose={() => {
+                        console.log('[Daily Reset Debug] Modal closed');
                         setShowDailyResetModal(false);
                         markAppLaunch();
                     }} 

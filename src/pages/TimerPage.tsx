@@ -1,13 +1,13 @@
 // src/pages/TimerPage.tsx
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import Timeline from '../components/Timeline';
-import StartSessionModal from '../components/StartSessionModal';
+import Timeline from '../components/features/analytics/Timeline';
+import StartSessionModal from '../components/ui/modals/StartSessionModal';
 import { formatDurationTimer, formatToHoursAndMinutes } from '../utils/formatters';
-import { useAppContext } from '../context/AppContext';
+import { useAppContext } from '../context/useAppContext';
 import { useTimelineScroll } from '../hooks/useTimelineScroll';
 import toast from 'react-hot-toast';
-import ProjectSelector from '../components/ProjectSelector';
-import TaskFocusDetail from '../components/TaskFocusDetail';
+import ProjectSelector from '../components/features/projects/ProjectSelector';
+import TaskFocusDetail from '../components/features/tasks/TaskFocusDetail';
 
 const TimerPage: React.FC = () => {
     const { sessions, projects, addSession, activeTodoId, setActiveTodoId, todos, addTodo } = useAppContext();

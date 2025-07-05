@@ -1,6 +1,6 @@
 // src/hooks/useDashboardData.ts
 import { useMemo } from 'react';
-import type { Session } from '../types';
+import type { Session } from '../types/index';
 
 type ViewType = 'day' | 'week' | 'month' | 'year' | 'custom';
 

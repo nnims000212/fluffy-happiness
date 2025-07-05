@@ -1,10 +1,10 @@
 // src/pages/TodayPage.tsx
 import React, { useState, useRef } from 'react';
-import { useAppContext } from '../context/AppContext';
-import TaskInput from '../components/TaskInput';
-import TaskDetails from '../components/TaskDetails';
-import PendingTasksList from '../components/PendingTasksList';
-import TodoItem from '../components/TodoItem';
+import { useAppContext } from '../context/useAppContext';
+import TaskInput from '../components/features/tasks/TaskInput';
+import TaskDetails from '../components/features/tasks/TaskDetails';
+import PendingTasksList from '../components/features/tasks/PendingTasksList';
+import TodoItem from '../components/features/tasks/TodoItem';
 
 const TodayPage: React.FC = () => {
     const { todos, setTodos, selectedTodoId, setSelectedTodoId, sessions } = useAppContext();

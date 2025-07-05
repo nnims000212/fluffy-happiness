@@ -1,8 +1,8 @@
 // src/pages/HistoryPage.tsx
 import React, { useState, useMemo } from 'react';
-import { useAppContext } from '../context/AppContext';
-import EditSessionModal from '../components/EditSessionModal';
-import type { Session } from '../types';
+import { useAppContext } from '../context/useAppContext';
+import EditSessionModal from '../components/ui/modals/EditSessionModal';
+import type { Session } from '../types/index';
 import { formatToHoursAndMinutes } from '../utils/formatters';
 import toast from 'react-hot-toast';
 
@@ -29,7 +29,7 @@ const HistoryPage: React.FC = () => {
 
     const handleSaveSession = (updatedData: Session, originalSession: Session | null) => {
         const taskName = updatedData.description.trim();
-        let finalSessionData = { ...updatedData };
+        const finalSessionData = { ...updatedData };
 
         if (taskName && !finalSessionData.todoId) {
             const existingTodo = todos.find(t => t.text.toLowerCase() === taskName.toLowerCase() && !t.completed);

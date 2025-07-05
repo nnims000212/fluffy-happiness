@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/useAppContext';
 import DataHealthCheck from '../components/layout/DataHealthCheck';
+import { DataBackupCard } from '../components/features/analytics';
+import type { ImportResult } from '../utils/dataBackup';
 import toast from 'react-hot-toast';
 
 const SettingsPage: React.FC = () => {
@@ -69,6 +71,28 @@ const SettingsPage: React.FC = () => {
         setTimeout(() => {
             window.location.reload();
         }, 1000);
+    };
+
+    const handleImportComplete = (result: ImportResult) => {
+        if (result.success) {
+            const parts = [];
+            if (result.imported.sessions > 0) parts.push(`${result.imported.sessions} sessions`);
+            if (result.imported.todos > 0) parts.push(`${result.imported.todos} todos`);
+            if (result.imported.projects > 0) parts.push(`${result.imported.projects} projects`);
+            
+            const message = parts.length > 0 
+                ? `Successfully imported: ${parts.join(', ')}`
+                : 'Data restored successfully';
+                
+            toast.success(message);
+            
+            // Force a page refresh to reload all data from localStorage
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            toast.error(`Import failed: ${result.errors.join(', ')}`);
+        }
     };
 
     return (
@@ -215,6 +239,16 @@ const SettingsPage: React.FC = () => {
                             Trigger Reset Check
                         </button>
                     </div>
+                </div>
+
+                {/* Data Backup & Restore */}
+                <div className="settings-section">
+                    <div className="section-header">
+                        <h2>Data Backup & Restore</h2>
+                        <p>Protect your focus timer data with regular backups</p>
+                    </div>
+                    
+                    <DataBackupCard onImportComplete={handleImportComplete} />
                 </div>
 
                 {/* System Health */}

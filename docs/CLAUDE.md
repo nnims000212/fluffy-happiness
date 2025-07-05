@@ -21,16 +21,6 @@ When asked to implement any feature, you'll first say: "Let me research the code
 
 For complex architectural decisions or challenging problems, use **"ultrathink"** to engage maximum reasoning capacity. Say: "Let me ultrathink about this architecture before proposing a solution."
 
-### USE MULTIPLE AGENTS!
-*Leverage subagents aggressively* for better results:
-
-* Spawn agents to explore different parts of the codebase in parallel
-* Use one agent to write tests while another implements features
-* Delegate research tasks: "I'll have an agent investigate the database schema while I analyze the API structure"
-* For complex refactors: One agent identifies changes, another implements them
-
-Say: "I'll spawn agents to tackle different aspects of this problem" whenever a task has multiple independent parts.
-
 ### Reality Checkpoints
 **Stop and validate** at these moments:
 - After implementing a complete feature
